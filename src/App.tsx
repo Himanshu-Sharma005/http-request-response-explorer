@@ -85,89 +85,129 @@ function App() {
   };
 
   return (
-    <div style={{ padding: "16px", fontFamily: "sans-serif" }}>
-      <h1>HTTP Request & Response Explorer</h1>
+    <div className="min-h-screen bg-neutral-900 text-neutral-100 p-6">
+      <div className="max-w-5xl mx-auto space-y-10">
+        {/* Header */}
+        <header>
+          <h1 className="text-3xl font-semibold border-b-2 border-red-500 inline-block pb-1">
+            HTTP Request & Response Explorer
+          </h1>
+          <p className="text-neutral-400 mt-2">
+            Inspect HTTP requests and responses directly from the browser
+          </p>
+        </header>
 
-      <div style={{ marginBottom: "12px" }}>
-        <label>
-          URL:
-          <input
-            type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="https://httpbin.org/get"
-            style={{ width: "100%", marginTop: "4px" }}
-          />
-        </label>
-      </div>
+        {/* Request Panel */}
+        <section className="border border-neutral-700 rounded-md p-5 space-y-5">
+          <h2 className="text-xl font-medium">Request</h2>
 
-      <div style={{ marginBottom: "12px" }}>
-        <label>
-          Method:
-          <select
-            value={method}
-            onChange={(e) => setMethod(e.target.value as HttpMethod)}
-            style={{ marginLeft: "8px" }}
-          >
-            <option value="GET">GET</option>
-            <option value="POST">POST</option>
-          </select>
-        </label>
-      </div>
-
-      <div style={{ marginBottom: "12px" }}>
-        <label>
-          Headers (one per line, Key: Value)
-          <textarea
-            value={rawHeaders}
-            onChange={(e) => setRawHeaders(e.target.value)}
-            rows={4}
-            style={{ width: "100%", marginTop: "4px" }}
-            placeholder="Content-Type: application/json"
-          />
-        </label>
-      </div>
-
-      {method === "POST" && (
-        <div style={{ marginBottom: "12px" }}>
-          <label>
-            Request Body (JSON)
-            <textarea
-              value={requestBody}
-              onChange={(e) => setRequestBody(e.target.value)}
-              rows={6}
-              style={{ width: "100%", marginTop: "4px" }}
-              placeholder='{"hello":"world"}'
+          {/* URL */}
+          <div>
+            <label className="block text-xs uppercase tracking-wide text-neutral-400 mb-1">
+              URL
+            </label>
+            <input
+              type="text"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="https://httpbin.org/get"
+              className="w-full rounded bg-neutral-800 border border-neutral-700 px-3 py-2 text-sm focus:outline-none focus:border-red-500"
             />
-          </label>
-        </div>
-      )}
+          </div>
 
-      <button onClick={sendRequest} disabled={isLoading}>
-        {isLoading ? "Sending..." : "Send Request"}
-      </button>
+          {/* Method */}
+          <div>
+            <label className="block text-xs uppercase tracking-wide text-neutral-400 mb-1">
+              Method
+            </label>
+            <select
+              value={method}
+              onChange={(e) => setMethod(e.target.value as HttpMethod)}
+              className="rounded bg-neutral-800 border border-neutral-700 px-3 py-2 text-sm focus:outline-none focus:border-red-500"
+            >
+              <option value="GET">GET</option>
+              <option value="POST">POST</option>
+            </select>
+          </div>
 
-      {status !== null && (
-        <p style={{ marginTop: "12px" }}>Status Code: {status}</p>
-      )}
+          {/* Headers */}
+          <div>
+            <label className="block text-xs uppercase tracking-wide text-neutral-400 mb-1">
+              Headers <span className="normal-case">(Key: Value)</span>
+            </label>
+            <textarea
+              value={rawHeaders}
+              onChange={(e) => setRawHeaders(e.target.value)}
+              rows={4}
+              placeholder="Content-Type: application/json"
+              className="w-full rounded bg-neutral-800 border border-neutral-700 px-3 py-2 text-sm font-mono focus:outline-none focus:border-red-500"
+            />
+          </div>
 
-      {responseTime !== null && <p>Response Time: {responseTime} ms</p>}
+          {/* Body */}
+          {method === "POST" && (
+            <div>
+              <label className="block text-xs uppercase tracking-wide text-neutral-400 mb-1">
+                Request Body <span className="normal-case">(JSON)</span>
+              </label>
+              <textarea
+                value={requestBody}
+                onChange={(e) => setRequestBody(e.target.value)}
+                rows={6}
+                placeholder='{"hello":"world"}'
+                className="w-full rounded bg-neutral-800 border border-neutral-700 px-3 py-2 text-sm font-mono focus:outline-none focus:border-red-500"
+              />
+            </div>
+          )}
 
-      {error && <p style={{ marginTop: "12px", color: "red" }}>{error}</p>}
+          {/* Send Button */}
+          <button
+            onClick={sendRequest}
+            disabled={isLoading}
+            className="bg-red-500 hover:bg-red-600 active:bg-red-700 transition disabled:opacity-50 text-white px-4 py-2 rounded text-sm font-medium"
+          >
+            {isLoading ? "Sending..." : "Send Request"}
+          </button>
 
-      {responseHeaders && (
-        <div style={{ marginTop: "16px" }}>
-          <h3>Response Headers</h3>
-          <pre>{JSON.stringify(responseHeaders, null, 2)}</pre>
-        </div>
-      )}
+          {error && <p className="text-red-400 text-sm">{error}</p>}
+        </section>
 
-      {responseBody && (
-        <div style={{ marginTop: "16px" }}>
-          <h3>Response Body</h3>
-          <pre>{responseBody}</pre>
-        </div>
-      )}
+        {/* Response Panel */}
+        <section className="border border-neutral-700 rounded-md p-5 space-y-5">
+          <h2 className="text-xl font-medium">Response</h2>
+
+          <div className="flex gap-6 text-sm">
+            {status !== null && (
+              <span className="font-medium">
+                Status: <span className="text-red-400">{status}</span>
+              </span>
+            )}
+            {responseTime !== null && <span>Time: {responseTime} ms</span>}
+          </div>
+
+          {responseHeaders && (
+            <div>
+              <h3 className="text-xs uppercase tracking-wide text-neutral-400 mb-1">
+                Headers
+              </h3>
+              <pre className="bg-neutral-800 border border-neutral-700 rounded p-4 text-xs leading-relaxed overflow-auto">
+                {JSON.stringify(responseHeaders, null, 2)}
+              </pre>
+            </div>
+          )}
+
+          {responseBody && (
+            <div>
+              <h3 className="text-xs uppercase tracking-wide text-neutral-400 mb-1">
+                Body
+              </h3>
+              <pre className="bg-neutral-800 border border-neutral-700 rounded p-4 text-xs leading-relaxed overflow-auto max-h-[400px]">
+                {responseBody}
+              </pre>
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
