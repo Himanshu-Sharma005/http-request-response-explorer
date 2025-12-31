@@ -10,6 +10,13 @@ function App() {
   const [status, setStatus] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [responseTime, setResponseTime] = useState<number | null>(null);
+  const [responseHeaders, setResponseHeaders] = useState<Record<
+    string,
+    string
+  > | null>(null);
+  const [responseBody, setResponseBody] = useState<string | null>(null);
+
   const sendRequest = async () => {
     if (!url) {
       setError("URL is required");
@@ -18,20 +25,36 @@ function App() {
 
     setError(null);
     setStatus(null);
+    setResponseTime(null);
+    setResponseHeaders(null);
+    setResponseBody(null);
     setIsLoading(true);
 
     try {
       const start = performance.now();
 
-      const response = await fetch(url, {
-        method,
-      });
+      const response = await fetch(url, { method });
 
       const end = performance.now();
 
       setStatus(response.status);
-      console.log("Response time (ms):", Math.round(end - start));
-    } catch (err) {
+      setResponseTime(Math.round(end - start));
+
+      const headersObj: Record<string, string> = {};
+      response.headers.forEach((value, key) => {
+        headersObj[key] = value;
+      });
+      setResponseHeaders(headersObj);
+
+      const text = await response.text();
+
+      try {
+        const json = JSON.parse(text);
+        setResponseBody(JSON.stringify(json, null, 2));
+      } catch {
+        setResponseBody(text);
+      }
+    } catch {
       setError("Failed to fetch. Check URL or CORS.");
     } finally {
       setIsLoading(false);
@@ -79,7 +102,23 @@ function App() {
         <p style={{ marginTop: "12px" }}>Status Code: {status}</p>
       )}
 
+      {responseTime !== null && <p>Response Time: {responseTime} ms</p>}
+
       {error && <p style={{ marginTop: "12px", color: "red" }}>{error}</p>}
+
+      {responseHeaders && (
+        <div style={{ marginTop: "16px" }}>
+          <h3>Response Headers</h3>
+          <pre>{JSON.stringify(responseHeaders, null, 2)}</pre>
+        </div>
+      )}
+
+      {responseBody && (
+        <div style={{ marginTop: "16px" }}>
+          <h3>Response Body</h3>
+          <pre>{responseBody}</pre>
+        </div>
+      )}
     </div>
   );
 }
