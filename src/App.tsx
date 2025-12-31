@@ -6,6 +6,9 @@ function App() {
   const [url, setUrl] = useState("");
   const [method, setMethod] = useState<HttpMethod>("GET");
 
+  const [rawHeaders, setRawHeaders] = useState("");
+  const [requestBody, setRequestBody] = useState("");
+
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -16,6 +19,22 @@ function App() {
     string
   > | null>(null);
   const [responseBody, setResponseBody] = useState<string | null>(null);
+
+  const parseHeaders = (): HeadersInit => {
+    const headers: Record<string, string> = {};
+
+    rawHeaders
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .forEach((line) => {
+        const [key, ...rest] = line.split(":");
+        if (!key || rest.length === 0) return;
+        headers[key.trim()] = rest.join(":").trim();
+      });
+
+    return headers;
+  };
 
   const sendRequest = async () => {
     if (!url) {
@@ -33,7 +52,11 @@ function App() {
     try {
       const start = performance.now();
 
-      const response = await fetch(url, { method });
+      const response = await fetch(url, {
+        method,
+        headers: parseHeaders(),
+        body: method === "POST" && requestBody ? requestBody : undefined,
+      });
 
       const end = performance.now();
 
@@ -92,11 +115,37 @@ function App() {
         </label>
       </div>
 
-      <div>
-        <button onClick={sendRequest} disabled={isLoading}>
-          {isLoading ? "Sending..." : "Send Request"}
-        </button>
+      <div style={{ marginBottom: "12px" }}>
+        <label>
+          Headers (one per line, Key: Value)
+          <textarea
+            value={rawHeaders}
+            onChange={(e) => setRawHeaders(e.target.value)}
+            rows={4}
+            style={{ width: "100%", marginTop: "4px" }}
+            placeholder="Content-Type: application/json"
+          />
+        </label>
       </div>
+
+      {method === "POST" && (
+        <div style={{ marginBottom: "12px" }}>
+          <label>
+            Request Body (JSON)
+            <textarea
+              value={requestBody}
+              onChange={(e) => setRequestBody(e.target.value)}
+              rows={6}
+              style={{ width: "100%", marginTop: "4px" }}
+              placeholder='{"hello":"world"}'
+            />
+          </label>
+        </div>
+      )}
+
+      <button onClick={sendRequest} disabled={isLoading}>
+        {isLoading ? "Sending..." : "Send Request"}
+      </button>
 
       {status !== null && (
         <p style={{ marginTop: "12px" }}>Status Code: {status}</p>
