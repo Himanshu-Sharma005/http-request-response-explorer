@@ -1,73 +1,136 @@
-# React + TypeScript + Vite
+HTTP Request & Response Explorer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A browser-based tool to understand HTTP requests and responses through real interaction, not theory.
 
-Currently, two official plugins are available:
+This project allows users to send HTTP requests directly from the browser and inspect how servers respond — including status codes, headers, body, response time, and browser-level constraints like CORS.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🔍 Why this project exists
 
-## React Compiler
+Most developers learn HTTP using tools like Postman, which hide real browser behavior.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+This project was built to answer questions like:
 
-## Expanding the ESLint configuration
+What does an actual browser send in an HTTP request?
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Why do some requests work in Postman but fail in the browser?
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+What role do headers really play?
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Why can a successful response have no body?
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+The goal is learning HTTP by doing, not memorizing definitions.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+✨ Features
+Request
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Send GET and POST requests
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Input any public URL
+
+Add custom request headers (Key: Value)
+
+Send raw JSON request body (POST only)
+
+Response
+
+View HTTP status code
+
+Measure client-observed response time
+
+Inspect response headers
+
+View formatted response body
+
+Correct handling of 204 No Content responses
+
+Browser-realistic behavior
+
+Uses the native Fetch API
+
+No backend server
+
+No authentication
+
+No database
+
+Real CORS restrictions are enforced
+
+🧠 What this project teaches
+
+Difference between request headers and request body
+
+Importance of Content-Type
+
+GET vs POST semantics
+
+Why some successful responses have no body
+
+How browsers differ from tools like Postman
+
+How CORS works in real frontend environments
+
+Why response time ≠ server execution time
+
+🛠️ Tech Stack
+
+Vite + React
+
+TypeScript
+
+Tailwind CSS
+
+Fetch API
+
+Deployed as a static frontend (Netlify)
+
+🧪 How to test POST requests
+
+Use the following example:
+
+URL
+
+https://httpbin.org/post
+
+
+Method
+
+POST
+
+
+Headers
+
+Content-Type: application/json
+
+
+Body
+
+{
+  "message": "Hello HTTP"
+}
+
+
+A successful response will echo the JSON back in the response body.
+
+⚠️ Known limitations (intentional)
+
+No request history
+
+No saved collections
+
+No authentication
+
+No backend proxy
+
+Some URLs will fail due to CORS (expected behavior)
+
+These are deliberate design decisions to keep the project focused on HTTP fundamentals.
+
+📌 Design philosophy
+
+Clarity over features
+
+Browser-realistic behavior over convenience
+
+No abstractions that hide HTTP concepts
+
+Minimal UI inspired by developer tools
